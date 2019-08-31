@@ -1,0 +1,37 @@
+function TaskMailMain(){
+  
+  var MySheet=SpreadsheetApp.getActiveSheet(); //シートを取得
+  var RowSheet=MySheet.getDataRange().getLastRow(); //シートの最終行を取得
+  var StrFrom="from@gmail.com"; //差出メールアドレス
+  var StrSender="taskmail"; //差出人名
+  var StrTo="to@gmail.com"; //送付するアドレス
+  //タスク一覧の一行目から順に送信履歴をチェックし、送信履歴が空の行をメールで送付
+  for(var n=2;n<=RowSheet;n++){ //タスク一覧の件数分繰り返す
+    if (MySheet.getRange(n,9).getValue()===""){ //送信履歴が空欄の場合メールを送付する
+      var StrSubject=MySheet.getRange(n,3).getValue(); //タイトルを取得
+      var StrTask1=MySheet.getRange(n,4).getValue(); //タスク1を取得
+      var StrTask2=MySheet.getRange(n,5).getValue(); //タスク2を取得
+      var StrTask3=MySheet.getRange(n,6).getValue(); //タスク3を取得
+      var StrCom=MySheet.getRange(n,7).getValue(); //コメントを取得
+      var StrMsg=MySheet.getRange(n,8).getValue(); //メッセージを取得
+     
+      var StrBody=StrTask1+'\n'+StrTask2+'\n'+StrTask3+'\n'+StrCom+'\n\n'+StrMsg; //本文結合
+         
+      //メールの送信
+      GmailApp.sendEmail(
+        StrTo, //toアドレス
+        StrSubject, //表題       
+        StrBody, //本文
+        {
+          from: StrFrom, //fromアドレス
+          name: StrSender //差出人
+        }
+      );
+      
+      n=n+RowSheet;  //for文を抜ける
+      MySheet.getRange(n,9).setValue(new Date); //今回送った日付を入れる
+      
+    };
+    
+  }
+}
